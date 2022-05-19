@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { getFilms } from './services/films';
 
 dotenv.config();
 
@@ -25,10 +26,20 @@ app.post('/favorites', (req: Request, res: Response) => {
 
 
 app.get('/films', (req: Request, res: Response) => {
-    res.send('ok');
+    getFilms((error: any, data: any) => {
+        if (error) {
+            if (app.get("NODE_ENV") == 'dev') {
+                res.status(500).json(error);
+            } else {
+                res.status(500).send('error');
+            }
+        } else {
+            res.json(data);
+        }
+    });
 });
 
-app.listen(app.get('PORT'), () => {
+ app.listen(app.get('PORT'), () => {
     console.log(`
         Server working.
         Port: ${app.get('PORT')}.
